@@ -1,0 +1,32 @@
+Safe Sequence: 1 3 4 0 2 
+-------------------------------
+Process: 1
+Allocated: 2 0 0 
+Needed: 1 2 2 
+Available: 3 3 2 
+Now available: 5 3 2 
+-------------------------------
+Process: 3
+Allocated: 2 1 1 
+Needed: 0 1 1 
+Available: 5 3 2 
+Now available: 7 4 3 
+-------------------------------
+Process: 4
+Allocated: 0 0 2 
+Needed: 4 3 1 
+Available: 7 4 3 
+Now available: 7 4 5 
+-------------------------------
+Process: 0
+Allocated: 0 1 0 
+Needed: 7 4 3 
+Available: 7 4 5 
+Now available: 7 5 5 
+-------------------------------
+Process: 2
+Allocated: 3 0 2 
+Needed: 6 0 0 
+Available: 7 5 5 
+Now available: 10 5 7 
+-------------------------------
