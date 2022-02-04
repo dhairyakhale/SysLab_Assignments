@@ -6,30 +6,28 @@
 #include <condition_variable>
 #include <chrono>
 
-std::mutex read, write, order, print;
+std::mutex read, write, order;
 std::condition_variable cv;
-std::priority_queue<int, std::vector<int>, std::greater<int>> pq;
+std::priority_queue<int, std::vector<int>, std::greater<int>> pq; //maintaing a priority queue to allow ordered access
 int number_of_friends_reading = 0;
 
 void write_to_card(int c){
-
-
-        //TODO: Reader-Writer logic
-
+        //we are locking for the order
         std::unique_lock<std::mutex> ul(order);
         cv.wait(ul, [c]{return pq.top() == c;});
         
+        //locking for write
         write.lock();
         std::this_thread::sleep_for(std::chrono::seconds(1));
         std::cout << "Friend " << c << " is writing\n";
         write.unlock();
 
         pq.pop();
-        cv.notify_all();
+        cv.notify_all(); //notifying all the threads to check the condition variable
 }
 
 void read_from_card(int c){
-        //TODO: Reader-Writer logic
+        //locking to maintain order access
         std::unique_lock<std::mutex> ul(order);
         cv.wait(ul, [c]{return pq.top() == c;});
 
@@ -40,13 +38,11 @@ void read_from_card(int c){
         read.unlock();
 
         pq.pop();
-        cv.notify_all();
+        cv.notify_all(); //notifying the threads to check the condition variable
         
-        //perform read
-        print.lock();
+        //performing read
         std::this_thread::sleep_for(std::chrono::seconds(1));
         std::cout << "Friend " << c << " is reading\n";
-        print.unlock();
 
         read.lock();
         number_of_friends_reading --;
@@ -66,15 +62,13 @@ int main(){
         
 
         for(int i=0; i<n; ++i){
-                coupon[i] = rand() % ((999 - 100) + 1) + 100;
+                coupon[i] = rand() % ((999 - 100) + 1) + 100; //giving random 3 digit as coupon id
                 pq.push(coupon[i]);
         }
         
         std::vector<bool> random(n);
         for(int i=0; i<n; ++i){
-                random[i] = rand() % 2;
-                // random[i] = 0;
-                // if(!random[i]) pq.push(coupon[i]); //pushing the write operations in priority queue so as to maintain order
+                random[i] = rand() % 2; //randomly making the friends read or write
         }
 
         for(int i=0; i<n; ++i){
