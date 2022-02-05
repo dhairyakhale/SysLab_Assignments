@@ -109,19 +109,23 @@ bool safeSeq()
 	vector<bool> finish(n, false);
 	int finish_count=0;
 
+	//Loop till all processes are finished
 	while(finish_count<n) {
 		bool safe = false;
 
 		for(int i=0;i<n;i++) {
+			//If a process is not finished
 			if(!finish[i]) {
 				bool flag = true;
 
+				//Check if the need is more than what is available
 				for(int j=0;j<m;j++) {
 					if(need[i][j] > temp[j]) {
 						flag=false;
 						break;
 					}
 				}
+				//If not, do allocation, finish that process and release those cutlery
 				if(flag) {
 					for(int j=0; j<m; j++)
                         temp[j] += alloc[i][j];
@@ -134,6 +138,8 @@ bool safeSeq()
 				}
 			}
 		}
+
+		//If safe sequence not found
 		if(!safe) {
 			for(int j=0;j<n;j++)
 				sequence[j] = -1;
