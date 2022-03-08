@@ -1,1 +1,2 @@
 mf hello.txt "This is content"
+pf hello.txt

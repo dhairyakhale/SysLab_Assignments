@@ -6,9 +6,11 @@
 
 using namespace std;
 
+static string root = "root/";
+
 struct file{
     string filename;
-    vector<int> disk_blocks;
+    vector<string> disk_blocks;
 };
 
 vector<file> files;
@@ -42,14 +44,13 @@ void create_file(string cmd){
 
     //Generating the blocks
     ofstream out;
-    vector<int> disk_blocks;
+    vector<string> disk_blocks;
     file f;
 
     for(int i=0; i<content_length; ++i){
         int cnt = 0;
-        int block_number = dist(rng);
-        string block = to_string(block_number) + ".txt";
-        disk_blocks.push_back(block_number);
+        string block = root + to_string(dist(rng)) + ".txt";
+        disk_blocks.push_back(block);
         out.open(block); 
         while(cnt < BLK_SIZE && i < content_length){
             out << content[i];
@@ -64,22 +65,163 @@ void create_file(string cmd){
     f.disk_blocks = disk_blocks;
 
     files.push_back(f);
+    cout << "Files created successfully\n";
+
+    // for(file f: files){
+    //     cout << f.filename << "\n";
+    //     for(string s : f.disk_blocks)
+    //         cout << s << "\n";
+    // }
 }
 
-int main(){
-    string cmd; getline(cin, cmd);
+void print_file(string cmd){
+    int cmd_length = cmd.length();
+    int space = 0;
+    string instruction = "", filename = "";
 
-    string instruction = "";
-    for(int i=0; i<cmd.length(); ++i){
-        if(cmd[i] != ' '){
+    //Parsing the command
+    for(int i=0; i<cmd_length; ++i){
+        if(cmd[i] == ' ') space ++;
+        else if(space == 0 && cmd[i] != ' ')
             instruction += cmd[i];
-        }
-        else{
+        else if(space == 1){
+            filename = cmd.substr(i);
             break;
         }
     }
 
+    //Fetching the disk blocks
+    vector<string> disk_blocks;
+    for(file f: files){
+        if(f.filename == filename){
+            disk_blocks = f.disk_blocks;
+            break;
+        }
+    }
 
-    if(instruction == "mf") create_file(cmd);
+    //Combining the disk block to form the string
+    string content = "";
+    ifstream in;
+    for(string s: disk_blocks){
+        in.open(s);
+        string str;
+        getline(in, str);
+        content += str;
+        in.close();
+    }
+
+    cout << content << "\n";
+}
+
+void delete_file(string cmd){
+    int cmd_length = cmd.length();
+    int space = 0;
+    string instruction = "", filename = "";
+
+    //Parsing the command
+    for(int i=0; i<cmd_length; ++i){
+        if(cmd[i] == ' ') space ++;
+        else if(space == 0 && cmd[i] != ' ')
+            instruction += cmd[i];
+        else if(space == 1){
+            filename = cmd.substr(i);
+            break;
+        }
+    }
+
+    //Deleting the files from file system
+    vector<string> disk_blocks;
+    for(file f : files){
+        if(f.filename == filename)
+            disk_blocks = f.disk_blocks;
+    }
+
+    for(string block : disk_blocks){
+        remove(block.c_str());
+    }
+
+    cout << "Deleted the blocks!\n";
+}
+
+void rename_file(string cmd){
+    int cmd_length = cmd.length();
+    int space = 0;
+    string instruction = "", filename1 = "", filename2 = "";
+
+    //Parsing the command
+    for(int i=0; i<cmd_length; ++i){
+        if(cmd[i] == ' ') space ++;
+        else if(space == 0 && cmd[i] != ' ')
+            instruction += cmd[i];
+        else if(space == 1 && cmd[i] != ' ')
+            filename1 += cmd[i];
+        else if(space == 2){
+            filename2 = cmd.substr(i);
+            break;
+        }
+    }
+
+    //Rename the file
+    bool flag = false;
+    for(int i=0; i<files.size(); ++i){
+        if(files[i].filename == filename1){
+            files[i].filename = filename2;
+            flag = true;
+            break;
+        }
+    }
+    if(!flag) cout << "File does not exist!\n";
+}
+
+void list_file(string cmd){
+    //List all the existing files
+    for(file f : files){
+        cout << f.filename << "\n";
+    }
+}
+
+int main(){
+    string ch;
+    while(true){
+        string cmd;
+        getline(cin, cmd);
+        string instruction = "";
+        for(int i=0; i<cmd.length(); ++i){
+            if(cmd[i] != ' '){
+                instruction += cmd[i];
+            }
+            else{
+                break;
+            }
+        }
+
+        if(instruction == "mf") {
+            create_file(cmd);
+            cin.clear();
+        }
+        else if(instruction == "pf") {
+            print_file(cmd);
+            cin.clear();
+        }
+        else if(instruction == "df") {
+            delete_file(cmd);
+            cin.clear();
+        }
+        else if(instruction == "rf") {
+            rename_file(cmd);
+            cin.clear();
+        }
+        else if(instruction == "ls") {
+            list_file(cmd);
+            cin.clear();
+        }
+        else{
+            cout << "Do you want to enter another command?";
+            cin.clear();
+            getline(cin, ch);
+            if(ch == "n" || ch == "N")
+                break;
+        }
+    }
     return 0;
 }
