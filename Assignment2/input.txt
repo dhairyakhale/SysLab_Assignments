@@ -1,0 +1,1 @@
+mf hello.txt "This is content"
