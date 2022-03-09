@@ -43,6 +43,7 @@ void create_file(string cmd){
     uniform_int_distribution<mt19937::result_type> dist(1, (int)1e6);
 
     //Generating the blocks
+    //TODO: Check if the file exists or not previously with same name
     ofstream out;
     vector<string> disk_blocks;
     file f;
@@ -66,12 +67,6 @@ void create_file(string cmd){
 
     files.push_back(f);
     cout << "Files created successfully\n";
-
-    // for(file f: files){
-    //     cout << f.filename << "\n";
-    //     for(string s : f.disk_blocks)
-    //         cout << s << "\n";
-    // }
 }
 
 void print_file(string cmd){
@@ -140,6 +135,7 @@ void delete_file(string cmd){
         remove(block.c_str());
     }
 
+    //TODO: Deleting the entry from datastructure
     cout << "Deleted the blocks!\n";
 }
 
@@ -215,13 +211,11 @@ int main(){
             list_file(cmd);
             cin.clear();
         }
-        else{
-            cout << "Do you want to enter another command?";
-            cin.clear();
-            getline(cin, ch);
-            if(ch == "n" || ch == "N")
-                break;
-        }
+        cout << "\nDo you want to enter another command?";
+        cin.clear();
+        getline(cin, ch);
+        if(ch == "n" || ch == "N")
+            break;
     }
     return 0;
 }
