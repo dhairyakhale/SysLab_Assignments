@@ -10,6 +10,7 @@ static string root = "root/";
 
 struct file{
     string filename;
+    int inode;
     vector<string> disk_blocks;
 };
 
@@ -42,8 +43,15 @@ void create_file(string cmd){
     mt19937 rng(dev());
     uniform_int_distribution<mt19937::result_type> dist(1, (int)1e6);
 
-    //Generating the blocks
     //TODO: Check if the file exists or not previously with same name
+    for(file f:files){
+        if(f.filename == filename){
+            cout << "File with same name exists!\n";
+            return;
+        }
+    }
+
+    //Generating the blocks
     ofstream out;
     vector<string> disk_blocks;
     file f;
@@ -63,6 +71,7 @@ void create_file(string cmd){
     }
 
     f.filename = filename;
+    f.inode = dist(rng);
     f.disk_blocks = disk_blocks;
 
     files.push_back(f);
@@ -136,6 +145,11 @@ void delete_file(string cmd){
     }
 
     //TODO: Deleting the entry from datastructure
+    for(int i=0; i<files.size(); ++i){
+        if(files[i].filename == filename){
+            files.erase(files.begin()+i);
+        }
+    }
     cout << "Deleted the blocks!\n";
 }
 
@@ -172,7 +186,7 @@ void rename_file(string cmd){
 void list_file(string cmd){
     //List all the existing files
     for(file f : files){
-        cout << f.filename << "\n";
+        cout << f.filename << " " << f.inode << "\n";
     }
 }
 
