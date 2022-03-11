@@ -1,4 +1,0 @@
-Alok is the best manager
-Aman: 23000	12500	1	
-Raj:  23000	12500	1	
-Alok: 35500	0	0	

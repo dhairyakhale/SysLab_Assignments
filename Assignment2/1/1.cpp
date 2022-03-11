@@ -360,6 +360,8 @@ int main()
 	for(int i=0;i<3;i++)
 		ofile<<alok[i]<<'\t';
 	ofile<<'\n';
+
+	cout<<"Check output.txt in same directory."<<endl;
 	
 	ofile.close();
 
